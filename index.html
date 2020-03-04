@@ -24,25 +24,43 @@
 		}
 	</style>
 	<script type="text/javascript">
+		let statusLog = {"type":"FeatureCollection","features":[]};
+		// localStorage.setItem('log', JSON.stringify(statusLog));
+		let formLog = {};
 		function loadLocalStorage(){
 			if (localStorage.getItem('log') !== null) {
 	        var inputParse = JSON.parse(localStorage.getItem('log'));
 	        
 	        Object.entries(inputParse).forEach(function([key,value]){
 	        	document.querySelector(`input[name="status${key}"][value="${value}"]`).checked="true"
+	        	let s = document.querySelector(`#${key}`);
+	        	let keyData = { 
+				"type":"Feature",
+				"properties":{
+					"address":s.dataset.address,
+					"name": s.dataset.name,
+					"status": value,
+				},"geometry":{
+					"type":"Point","coordinates": s.dataset.location.split(',').map(x => +x)
+				}
+				}
+
+				statusLog.features.push(keyData)
+				localStorage.setItem('geojson', JSON.stringify(statusLog));
+
 	        })
 	    }
-	}
+		}
+
 		function changeIFrame(lat,lon){
 			document.querySelector('iframe').src=`https://www.google.com/maps/embed/v1/streetview?key=AIzaSyDyBWScH_mcoQP8SyrDHfFTFE37cBbVFhU&location=${lat},${lon}`
 		};
 
-		let statusLog = {"type":"FeatureCollection","features":[]};
-		// localStorage.setItem('log', JSON.stringify(statusLog));
-		let formLog = {};
+		
 
 		function logBodegaStatus(s){
-			const loc = document.querySelector(`#${s}`)
+
+			const loc = document.querySelector(`#${s}`);
 			const locdata = { 
 				"type":"Feature",
 				"properties":{
