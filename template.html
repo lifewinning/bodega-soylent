@@ -1,0 +1,82 @@
+<html><head>
+	<title>is it a bodega??</title>
+	<style type="text/css">
+		body{
+			background-color: papayawhip;
+		}
+		iframe{
+			position: fixed;
+			right: 5px;
+			top: 50px;
+			width: 60vw;
+			height: 75vh;
+		}
+		div{
+			left: 0px;
+			max-width: 33vw;
+		}
+		#save{
+			position:fixed;
+			right:0px;
+			top:5px;
+			font-size: 200px;
+			font-weight: 800;
+		}
+	</style>
+	<script type="text/javascript">
+
+		function changeIFrame(lat,lon){
+			document.querySelector('iframe').src=`https://www.google.com/maps/embed/v1/streetview?key=AIzaSyDyBWScH_mcoQP8SyrDHfFTFE37cBbVFhU&location=${lat},${lon}`
+		};
+		let statusLog = {"type":"FeatureCollection","features":[]};
+		// localStorage.setItem('log', JSON.stringify(statusLog));
+
+		function logBodegaStatus(s){
+			const loc = document.querySelector(`#${s}`)
+			const locdata = { 
+				"type":"Feature",
+				"properties":{
+					"address":loc.dataset.address,
+					"name": loc.dataset.name,
+					"status": loc.querySelector(`input[name="status${s}"]:checked`).value
+				},"geometry":{
+					"type":"Point","coordinates": loc.dataset.location.split(',').map(x => +x)
+				}
+			}
+			statusLog.features.push(locdata)
+			localStorage.setItem('log', JSON.stringify(statusLog));
+		};
+		 
+	</script>
+	</head>
+	<body>
+			<h1>Are These Bodegas??</h1>
+			<input type="button" id="save" value="save file"/>
+	
+		<div>
+		</div>
+			<iframe></iframe>
+			<script type="text/javascript">
+				function download(filename, text) {
+					    var element = document.createElement('a');
+					    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(localStorage['log']));
+					    element.setAttribute('download', filename);
+
+					    element.style.display = 'none';
+					    document.body.appendChild(element);
+
+					    element.click();
+
+					    document.body.removeChild(element);
+					}
+
+					// Start file download.
+					document.getElementById("save").addEventListener("click", function(){
+					    // Generate download of hello.txt file with some content
+					    var text = localStorage.getItem('log');
+					    var filename = "bodegas.geojson";
+					    
+					    download(filename, text);
+					}, false);
+			</script>
+</body></html>
